@@ -126,7 +126,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     loss_operation = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logits, labels = correct_label))
 
     # TBD - Learning rate?
-    optimizer = tf.train.AdamOptimizer()
+    optimizer = tf.train.AdamOptimizer(learning_rate)
     training_operation = optimizer.minimize(loss_operation)
     
     return logits, training_operation, loss_operation
@@ -160,13 +160,14 @@ def train_nn(sess, epochs, batch_size, get_batches_fn,
     
     for i in range(epochs):
         for images, labels in get_batches_fn(batch_size):
-            print("Image: {}".format(images[0].shape))
-            print("Label: {}".format(labels[0].shape))
-            loss = sess.run(train_op,
-                            feed_dict={ input_image: images,
-                                        correct_label: labels,
-                                        keep_prob: 0.5})
+            #print("Image: {}".format(images[0].shape))
+            #print("Label: {}".format(labels[0].shape))
             print("Epoch: {} ".format(i+1))
+            _, loss = sess.run([train_op, cross_entropy_loss],
+                               feed_dict={ input_image: images,
+                                           correct_label: labels,
+                                           keep_prob: 0.5,
+                                           learning_rate: 0.01})
             print(" Loss: {} ".format(loss))
 
 tests.test_train_nn(train_nn)
@@ -205,19 +206,15 @@ def run():
 
 
         epochs        = 1
-        batch_size    = 16
-        input_image   = tf.placeholder(tf.float32, (None,
-                                                    image_shape[0],
-                                                    image_shape[1],
-                                                    image_channels))
+        batch_size    = 2
         
-        correct_label = tf.placeholder(tf.int32, (None,
-                                                  image_shape[0],
-                                                  image_shape[1],
-                                                  num_classes))
+        correct_label = tf.placeholder(tf.float32, (None,
+                                                    None,
+                                                    None,
+                                                    num_classes))
         
         #keep_prob     = tf.placeholder(tf.float32, (None, 100))#Unused
-        learning_rate = tf.placeholder(tf.int32, (None, 100)) #Unused
+        learning_rate = tf.placeholder(tf.float32) 
         
         logits, training_operation, loss_operation = optimize(nn_last_layer,
                                                               correct_label,

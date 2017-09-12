@@ -4,8 +4,7 @@ import helper
 import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
-
-## NEW VERSION!!
+from tqdm import tqdm
 
 # Check TensorFlow Version
 assert LooseVersion(tf.__version__) >= LooseVersion('1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
@@ -159,10 +158,10 @@ def train_nn(sess, epochs, batch_size, get_batches_fn,
     sess.run(tf.global_variables_initializer())
     
     for i in range(epochs):
+        print("Epoch: {} ".format(i+1))
         for images, labels in get_batches_fn(batch_size):
             #print("Image: {}".format(images[0].shape))
             #print("Label: {}".format(labels[0].shape))
-            print("Epoch: {} ".format(i+1))
             _, loss = sess.run([train_op, cross_entropy_loss],
                                feed_dict={ input_image: images,
                                            correct_label: labels,

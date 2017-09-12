@@ -204,7 +204,7 @@ def run():
         nn_last_layer = layers(vgg_l3, vgg_l4, vgg_l7, num_classes) 
 
 
-        epochs        = 20
+        epochs        = 1
         batch_size    = 8
         
         correct_label = tf.placeholder(tf.float32, (None,
@@ -225,7 +225,7 @@ def run():
                  correct_label, keep_prob, learning_rate)
         
         # TODO: Save inference data using helper.save_inference_samples
-        #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
+        helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
 
         # OPTIONAL: Apply the trained model to a video
 

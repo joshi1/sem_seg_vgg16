@@ -65,42 +65,52 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
+
+    #Kernel initializer with normal distribution. use in all layers.
+    initializer = tf.truncated_normal_initializer(stddev=0.01) 
+    
     #l7 1x1 conv layer
     dec_l7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1,
                                   padding = 'same',
                                   kernel_regularizer =
-                                  tf.contrib.layers.l2_regularizer(1e-3))
+                                  tf.contrib.layers.l2_regularizer(1e-3),
+                                  kernel_initializer = initializer)
 
     
     dec_l7_tx = tf.layers.conv2d_transpose(dec_l7_1x1, num_classes, 4, 2,
                                            padding = 'same',
                                            kernel_regularizer =
-                                           tf.contrib.layers.l2_regularizer(1e-3))
-
+                                           tf.contrib.layers.l2_regularizer(1e-3),
+                                           kernel_initializer = initializer)
+    
     dec_l4_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1,
                                   padding = 'same',
                                   kernel_regularizer =
-                                  tf.contrib.layers.l2_regularizer(1e-3))
+                                  tf.contrib.layers.l2_regularizer(1e-3),
+                                  kernel_initializer = initializer)
     
     
     dec_l4l7 = tf.add(dec_l7_tx, dec_l4_1x1)
 
     dec_l4l7_tx = tf.layers.conv2d_transpose(dec_l4l7, num_classes, 4, 2,
-                                           padding = 'same',
-                                           kernel_regularizer =
-                                           tf.contrib.layers.l2_regularizer(1e-3))
+                                             padding = 'same',
+                                             kernel_regularizer =
+                                             tf.contrib.layers.l2_regularizer(1e-3),
+                                             kernel_initializer = initializer)
 
     dec_l3_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1,
                                   padding = 'same',
                                   kernel_regularizer =
-                                  tf.contrib.layers.l2_regularizer(1e-3))
+                                  tf.contrib.layers.l2_regularizer(1e-3),
+                                  kernel_initializer = initializer)
     
     dec_l3l4l7 = tf.add(dec_l4l7_tx, dec_l3_1x1)
 
     dec_l3l4l7_tx = tf.layers.conv2d_transpose(dec_l3l4l7, num_classes, 16, 8,
                                                padding = 'same',
                                                kernel_regularizer =
-                                               tf.contrib.layers.l2_regularizer(1e-3))
+                                               tf.contrib.layers.l2_regularizer(1e-3),
+                                               kernel_initializer = initializer)
 
     
     return dec_l3l4l7_tx
@@ -166,7 +176,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn,
                                feed_dict={ input_image: images,
                                            correct_label: labels,
                                            keep_prob: 0.5,
-                                           learning_rate: 0.01})
+                                           learning_rate: 0.001})
             print(" Loss: {} ".format(loss))
 
 tests.test_train_nn(train_nn)
@@ -204,7 +214,7 @@ def run():
         nn_last_layer = layers(vgg_l3, vgg_l4, vgg_l7, num_classes) 
 
 
-        epochs        = 1
+        epochs        = 20
         batch_size    = 8
         
         correct_label = tf.placeholder(tf.float32, (None,

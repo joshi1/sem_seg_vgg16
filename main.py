@@ -205,8 +205,8 @@ def run():
         nn_last_layer = layers(vgg_l3, vgg_l4, vgg_l7, num_classes) 
 
 
-        epochs        = 1
-        batch_size    = 2
+        epochs        = 20
+        batch_size    = 8
         
         correct_label = tf.placeholder(tf.float32, (None,
                                                     None,
